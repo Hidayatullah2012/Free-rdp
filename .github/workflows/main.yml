@@ -1,0 +1,14 @@
+name: Free Windows RDP  
+on: workflow_dispatch  
+jobs:  
+  build:  
+    runs-on: windows-latest  
+    steps:  
+      - name: Enable RDP  
+        run: |  
+          net user github 12345 /add  
+          net localgroup Administrators github /add  
+          reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f  
+          netsh advfirewall firewall set rule group="Remote Desktop" new enable=Yes  
+          powershell Invoke-WebRequest -Uri "https://raw.githubusercontent.com/kostyabalashov/win-github-rdp/main/enable-rdp.ps1" -OutFile enable-rdp.ps1  
+          powershell -ExecutionPolicy Unrestricted -File enable-rdp.ps1
